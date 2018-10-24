@@ -373,11 +373,52 @@ public class ArrayUtil {
      * @param index 插入位置，此位置为对应此位置元素之前的空档
      * @param newElements 新元素
      * @return 新数组
-     * @since 4.0.8
      */
     @SuppressWarnings("unchecked")
     public static <T> Object insert(Object array, int index, T... newElements) {
-        return null;
+        if(isEmpty(newElements)){
+            return array;
+        }
+        if(isEmpty(array)){
+            return newElements;
+        }
+        final int len = length(array);
+        if(index < 0){
+            index = (index % len) + len;
+        }
+        final T[] result = newArray(array.getClass().getComponentType(), Math.max(len, index) + newElements.length);
+        System.arraycopy(array, 0, result, 0, Math.min(len, index));
+        System.arraycopy(newElements,0, result, index, newElements.length);
+        if(index < len){
+            System.arraycopy(array, index, result, index + newElements.length, len - index);
+        }
+        return result;
+    }
+
+
+    /**
+     * 获取数组长度<br>
+     * 如果参数为{@code null}，返回0
+     *
+     * <pre>
+     * ArrayUtil.length(null)            = 0
+     * ArrayUtil.length([])              = 0
+     * ArrayUtil.length([null])          = 1
+     * ArrayUtil.length([true, false])   = 2
+     * ArrayUtil.length([1, 2, 3])       = 3
+     * ArrayUtil.length(["a", "b", "c"]) = 3
+     * </pre>
+     *
+     * @param array 数组对象
+     * @return 数组长度
+     * @throws IllegalArgumentException 如果参数不为数组，抛出此异常
+     * @see Array#getLength(Object)
+     */
+    public static int length(Object array) throws IllegalArgumentException {
+        if(null == array){
+            return 0;
+        }
+        return Array.getLength(array);
     }
 
 
